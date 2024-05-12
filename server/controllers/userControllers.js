@@ -23,11 +23,8 @@ exports.registerUser = async (req, res) => {
     }
     const lowerEmail = email.toLowerCase();
     const hashedPassKey = bcrypt.hashSync(password, 8);
-    let token = jwt.sign({ email, username }, "shhhhh", {
-      expiresIn: 86400, // expires in 24 hours
-    });
     const newUser = User({
-      user_id: 1,
+      user_id: uuidv4(),
       email: lowerEmail,
       password: hashedPassKey,
       username,
@@ -54,12 +51,24 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ $or: [{ email }, { username }] });
+    const user = await User.findOne({ email });
     if (user) {
       console.log(user);
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      console.log("isMatch", isMatch);
+      if (!isMatch) {
+        return res.status(401).json({
+          message: "password dosent match",
+        });
+      }
+      const token = jwt.sign({ id: user._id, username }, "ssssh", {
+        expiresIn: "1h",
+      });
       return res.status(200).json({
-        message: "user  found",
-      })
+        message: "Login Succesfull",
+        token,
+      });
     } else {
       return res.status(404).json({
         message: "user not found",
@@ -69,8 +78,6 @@ exports.loginUser = async (req, res) => {
     console.log("Error loggin  user:", err);
     return res.status(500).json({ error: "Error regestring user" });
   }
-
-  return res.status(200).json({
-    message: "req recieved",
-  });
 };
+
+
