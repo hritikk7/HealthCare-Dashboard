@@ -27,7 +27,6 @@ function SignUpPage() {
       userDetails.email === ""
     ) {
       setErrMsg("Fill all the Fileds");
-
     }
     registerUser();
   };
@@ -67,20 +66,6 @@ function SignUpPage() {
           <div className="mb-4">
             <label htmlFor="username" className="block text-sm mb-1">
               {" "}
-              Username
-            </label>
-            <input
-              type="text"
-              name="username"
-              id="username"
-              onChange={(e) => handleUserInput(e)}
-              className="w-full h-10 border-2 rounded-lg p-2 text-sm"
-              placeholder="mail@website.com"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-sm mb-1">
-              {" "}
               Email
             </label>
             <input
@@ -92,6 +77,21 @@ function SignUpPage() {
               placeholder="mail@website.com"
             />
           </div>
+          <div className="mb-4">
+            <label htmlFor="username" className="block text-sm mb-1">
+              {" "}
+              Username
+            </label>
+            <input
+              type="text"
+              name="username"
+              id="username"
+              onChange={(e) => handleUserInput(e)}
+              className="w-full h-10 border-2 rounded-lg p-2 text-sm"
+              placeholder="username"
+            />
+          </div>
+
           <div className="mb-4">
             <label htmlFor="password" className="block text-sm mb-1">
               Password

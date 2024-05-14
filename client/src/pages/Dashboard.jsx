@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import NavBar from "../components/NavBar/NavBar";
 import PatientCard from "../components/PatientCard/PatientCard";
 import axios from "axios";
@@ -8,38 +8,46 @@ function Dashboard() {
   // const [patientDetails, setPatientDetails] = useState({});
   const [patientName, setPatientName] = useState("");
   const [bed_id, setBedId] = useState("");
-  const [errMsg, setErrMsg] = useState('')
-  const [data, setData] = useState([])
+  const [errMsg, setErrMsg] = useState("");
+  const [data, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+ 
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+
 
   const createPatient = async (patientName, bed_id) => {
     console.log("calling createpatient ");
     const apiUrl = "http://127.0.0.1:8080/api/patient/create";
 
     try {
-      const token = localStorage.getItem("token")
       const config = {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ` + localStorage.getItem("token"),
+          Authorization: `Bearer ` + localStorage.getItem("token"),
         },
       };
       const data = {
-        patientname: patientName, 
+        patientname: patientName,
         bed_id: bed_id,
       };
 
       const response = await axios.post(apiUrl, data, config);
       if (response) {
         console.log(response);
-        if(response.data.message === "Patient Created Succesfully"){
-          console.log("inside msg")
-          setErrMsg("")
-          setBedId("")
-          setPatientName("")
-          toggleModal()
+        if (response.data.message === "Patient Created Succesfully") {
+          console.log("inside msg");
+          setErrMsg("Patient Created Succesfully");
+          setBedId("");
+          setPatientName("");
+          getAllPatients();
+          setTimeout(() => {
+            toggleModal();
+          }, 3000);
         }
-
-
       }
     } catch (err) {
       if (
@@ -48,17 +56,55 @@ function Dashboard() {
         err.response.data.message === "Error creating patient!!"
       ) {
         setErrMsg("User already exists with associated bedid");
-       
       } else {
-        console.log("Error Regestring User: ", err);
-        setErrMsg("Error Regestring User");
+        console.log("Error creating patient!!: ", err);
+        setErrMsg("Error creating patient!!");
+      }
+    }
+  };
+
+  useEffect(() => {
+    getAllPatients();
+  }, []);
+
+  const getAllPatients = async () => {
+    console.log("calling getAllPatients ");
+    const apiUrl = "http://127.0.0.1:8080/api/patient/patients";
+
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ` + localStorage.getItem("token"),
+        },
+      };
+
+      const response = await axios.get(apiUrl, config);
+      if (response) {
+        console.log(response);
+        if (response) {
+          console.log("inside msg");
+          setData(response.data.patients);
+          setErrMsg("");
+        }
+      }
+    } catch (err) {
+      if (
+        err.response &&
+        err.response.data &&
+        err.response.data.message === "Error creating patient!!"
+      ) {
+        setErrMsg("User already exists with associated bedid");
+      } else {
+        console.log("Error creating patient!!: ", err);
+        setErrMsg("Error creating patient!!");
       }
     }
   };
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
-  };
+  }
   const handlePatientInput = (e) => {
     const { name, value } = e.target;
     if (name === "patientName") {
@@ -68,49 +114,12 @@ function Dashboard() {
       setBedId(value);
     }
   };
-
   const handlePatientSubmit = (e) => {
     e.preventDefault();
-    console.log("bed_id ", bed_id )
+    console.log("bed_id ", bed_id);
 
     createPatient(patientName, bed_id);
-    // Add further logic for submitting data
   };
-  // const CreatePatient = () => {
-  //   return (
-  //     <div className="w-1/4 h-full  flex items-center border-r-2 border-gray-200">
-  //       <button
-  //         onClick={toggleModal}
-  //         className="text-xl font-bold h-12 w-3/4 bg-gray-200 rounded-xl  "
-  //         data-modal-toggle="authentication-modal"
-  //       >
-  //         Create Patient
-  //       </button>
-  //       {isModalOpen && (
-  //         <>
-  //           <div className="fixed top-0 left-0 flex justify-center items-center w-full h-full bg-black bg-opacity-50 z-50">
-  //             <div className="bg-white p-8 rounded-lg">
-  //               <label htmlFor="">Patinet Name</label>
-  //               <input
-  //                 type="text"
-  //                 className="border-2"
-  //                 name="patientName"
-  //                 onChange={(e) => handlePatientInput(e)}
-  //               />
-
-  //               <label htmlFor="">Bed Id </label>
-  //               <input
-  //                 type="text"
-  //                 className="border-2"
-  //                 onChange={(e) => handlePatientInput(e)}
-  //               />
-  //             </div>
-  //           </div>
-  //         </>
-  //       )}
-  //     </div>
-  //   );
-  // };
 
   return (
     <div className="flex flex-col">
@@ -127,7 +136,7 @@ function Dashboard() {
           {isModalOpen && (
             <>
               <div className="fixed top-0 left-0 flex justify-center items-center w-full h-full bg-black bg-opacity-50 z-50 ">
-                <div className="bg-white p-8 rounded-lg h-1/3 w-1/4">
+                <div className="bg-white p-8 rounded-lg  w-1/4">
                   <div className="flex flex-col">
                     <label htmlFor="" className="text-xl font-bold mb-3">
                       Patinet Name
@@ -145,7 +154,7 @@ function Dashboard() {
                     </label>
                     <input
                       type="text"
-                      name= "bed_id"
+                      name="bed_id"
                       className="border-2 rounded-lg mb-4 h-10 p-3"
                       onChange={(e) => handlePatientInput(e)}
                     />
@@ -163,6 +172,9 @@ function Dashboard() {
                     >
                       Submit
                     </button>
+                    {errMsg && (
+                      <p className="text-base text-red-600">{errMsg}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -176,22 +188,15 @@ function Dashboard() {
               type="text"
               className=" h-12 w-72 p-4 rounded-lg border-2 border-black"
               placeholder="Patientname, Bed_id "
+              onChange={(e)=>handleSearchChange(e)}
             />
           </div>
         </div>
       </div>
       <div className="flex flex-grow justify-center items-center">
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 bg-zinc-100 p-4">
-          <PatientCard />
-          <PatientCard />
-          <PatientCard />
-          <PatientCard />
-          <PatientCard />
-          <PatientCard />
-          <PatientCard />
-          <PatientCard />
-          <PatientCard />
-          <PatientCard />
+          {data &&
+            data.map((item) => <PatientCard key={item.id} data={item} />)}
         </div>
       </div>
     </div>

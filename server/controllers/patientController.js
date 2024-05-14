@@ -6,7 +6,7 @@ exports.getAllPatients = async (req, res) => {
   try {
     const allPatients = await Patient.find({});
     return res.status(200).json({
-      patinets: allPatients,
+      patients: allPatients,
     });
   } catch (err) {
     console.log("Error : ", err);
