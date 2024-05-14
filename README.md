@@ -1,7 +1,7 @@
 
 This repository contains the code for a Hospital Management System, consisting of both backend and frontend components, developed as part of a technical task.
 Please visit the link to access the screen recording: [Screen Recording](https://drive.google.com/file/d/1yBufJ4kJ0_orIuEdjtE_DgDQgxrGTRZj/view?usp=sharing)
-Please visit the link to access the screenshots of the project: [Screen Recording](https://drive.google.com/drive/folders/1bO2G-2Wfue_yTGg5RfusYXnBPWwlJVVf?usp=sharing)
+Please visit the link to access the screenshots of the project: [Screen Shots](https://drive.google.com/drive/folders/1bO2G-2Wfue_yTGg5RfusYXnBPWwlJVVf?usp=sharing)
 
 #### Backend 
 
