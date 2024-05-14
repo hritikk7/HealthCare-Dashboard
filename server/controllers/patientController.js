@@ -18,8 +18,9 @@ exports.getAllPatients = async (req, res) => {
 
 //Create patient
 exports.createPatient = async (req, res) => {
-  const { bed_id, patinetname } = req.body;
-  console.log(bed_id, patinetname);
+  const { bed_id, patientname } = req.body;
+  console.log(" patient name ", patientname);
+  console.log("bed id:  ",bed_id);
   try {
     const existingPatient = await Patient.findOne({ bed_id });
     if (existingPatient) {
@@ -29,7 +30,7 @@ exports.createPatient = async (req, res) => {
     }
     const newPatient = Patient({
       patient_id: uuidv4(),
-      patinetname,
+      patientname,
       bed_id,
     });
     await newPatient.save();

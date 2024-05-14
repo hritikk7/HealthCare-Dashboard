@@ -7,11 +7,11 @@ function App() {
   return (
     <div className="App h-screen w-screen">
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        {/* <Route path="/" element={} /> */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
-      <LoginPage />
     </div>
   );
 }
